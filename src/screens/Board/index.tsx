@@ -6,7 +6,11 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
+import DrawLine from '../../components/DrawLine';
+import IDrawLine from '../../components/DrawLine/Interface';
 import SideButton from '../../components/SideButton';
+
+let drawLine: IDrawLine = {};
 
 const Board: FC = () => {
   const pan = useRef(new Animated.ValueXY()).current;
@@ -15,6 +19,8 @@ const Board: FC = () => {
   const [imageBackground, setImageBackground] = React.useState<any>({});
   const [imagePosition, setImagePosition] = useState<Animated.ValueXY>(pan);
   const [imageScale, setImageScale] = useState<number>(1);
+  const [drawLineTouch, setDrawLineTouch] = React.useState<IDrawLine[]>([]);
+
   const panResponder = useMemo(
     () =>
       PanResponder.create({
@@ -22,15 +28,16 @@ const Board: FC = () => {
           //console.log('onStartShouldSetPanResponder');
           return true;
         },
-        onStartShouldSetPanResponderCapture: () => {
+        onStartShouldSetPanResponderCapture: (evt) => {
           //console.log('onStartShouldSetPanResponderCapture');
+
           if (pencil) {
-            /* drawLine = {
-            startX: evt.nativeEvent.locationX,
-            startY: evt.nativeEvent.locationY,
-            endX: evt.nativeEvent.locationX,
-            endY: evt.nativeEvent.locationY,
-          }; */
+            drawLine = {
+              startX: evt.nativeEvent.locationX,
+              startY: evt.nativeEvent.locationY,
+              endX: evt.nativeEvent.locationX,
+              endY: evt.nativeEvent.locationY,
+            };
           }
           return true;
         },
@@ -50,20 +57,20 @@ const Board: FC = () => {
               useNativeDriver: false,
             })
           : undefined,
-        onPanResponderRelease: () => {
+        onPanResponderRelease: (evt) => {
           //console.log('onPanResponderRelease');
           pan.extractOffset();
           setImagePosition(new Animated.ValueXY(pan));
 
           if (pencil) {
-            /* drawLine = {
-            startX: drawLine.startX,
-            startY: drawLine.startY,
-            endX: evt.nativeEvent.locationX,
-            endY: evt.nativeEvent.locationY,
-          };
+            drawLine = {
+              startX: drawLine.startX,
+              startY: drawLine.startY,
+              endX: evt.nativeEvent.locationX,
+              endY: evt.nativeEvent.locationY,
+            };
 
-          setDrawLineTouch((arr) => [...arr, drawLine]); */
+            setDrawLineTouch((arr) => [...arr, drawLine]);
           }
         },
       }),
@@ -93,6 +100,10 @@ const Board: FC = () => {
               : null,
           }}
         />
+        <DrawLine
+          imageBackground={imageBackground}
+          drawLineTouch={drawLineTouch}
+        />
       </Animated.View>
       <SideButton
         setImageBackground={setImageBackground}
@@ -100,6 +111,7 @@ const Board: FC = () => {
         moveImage={moveImage}
         setImageScale={setImageScale}
         setPencil={setPencil}
+        pencil={pencil}
       />
     </View>
   );

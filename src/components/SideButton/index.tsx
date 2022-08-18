@@ -9,8 +9,15 @@ type Props = {
   moveImage: boolean;
   setImageScale: React.Dispatch<SetStateAction<number>>;
   setPencil: React.Dispatch<SetStateAction<boolean>>;
+  pencil: boolean;
 };
-const Board: FC<Props> = ({setImageBackground, setMoveImage, moveImage}) => {
+const SideButton: FC<Props> = ({
+  setImageBackground,
+  setMoveImage,
+  moveImage,
+  setPencil,
+  pencil,
+}) => {
   const [state, setState] = React.useState({open: false});
 
   const onStateChange = ({open}: any) => setState({open});
@@ -55,7 +62,10 @@ const Board: FC<Props> = ({setImageBackground, setMoveImage, moveImage}) => {
         {
           icon: 'pencil',
           small: false,
-          onPress: () => {},
+          color: pencil ? 'red' : 'gray',
+          onPress: () => {
+            setPencil(!pencil);
+          },
         },
         {
           icon: 'image-area',
@@ -87,4 +97,4 @@ const styles = StyleSheet.create({
     backgroundColor: '#EA5B70',
   },
 });
-export default Board;
+export default SideButton;
