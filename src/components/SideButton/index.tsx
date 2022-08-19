@@ -8,6 +8,7 @@ type Props = {
   setMoveImage: React.Dispatch<SetStateAction<boolean>>;
   moveImage: boolean;
   setImageScale: React.Dispatch<SetStateAction<number>>;
+  imageScale: number;
   setPencil: React.Dispatch<SetStateAction<boolean>>;
   pencil: boolean;
 };
@@ -17,6 +18,8 @@ const SideButton: FC<Props> = ({
   moveImage,
   setPencil,
   pencil,
+  setImageScale,
+  imageScale,
 }) => {
   const [state, setState] = React.useState({open: false});
 
@@ -44,12 +47,20 @@ const SideButton: FC<Props> = ({
         {
           icon: 'magnify-plus',
           small: false,
-          onPress: () => {},
+          onPress: () => {
+            if (imageScale < 2) {
+              setImageScale(imageScale + 0.4);
+            }
+          },
         },
         {
           icon: 'magnify-minus',
           small: false,
-          onPress: () => {},
+          onPress: () => {
+            if (imageScale > 0.4) {
+              setImageScale(imageScale - 0.4);
+            }
+          },
         },
         {
           icon: 'arrow-all',

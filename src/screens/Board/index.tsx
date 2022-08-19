@@ -110,6 +110,7 @@ const Board: FC = () => {
         setMoveImage={setMoveImage}
         moveImage={moveImage}
         setImageScale={setImageScale}
+        imageScale={imageScale}
         setPencil={setPencil}
         pencil={pencil}
       />
