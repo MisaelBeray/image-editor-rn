@@ -9,6 +9,7 @@ import {
 import DrawLine from '../../components/DrawLine';
 import IDrawLine from '../../components/DrawLine/Interface';
 import SideButton from '../../components/SideButton';
+import ViewShot from 'react-native-view-shot';
 
 let drawLine: IDrawLine = {};
 
@@ -20,6 +21,7 @@ const Board: FC = () => {
   const [imagePosition, setImagePosition] = useState<Animated.ValueXY>(pan);
   const [imageScale, setImageScale] = useState<number>(1);
   const [drawLineTouch, setDrawLineTouch] = React.useState<IDrawLine[]>([]);
+  const viewShotRef = useRef<ViewShot>(null);
 
   const panResponder = useMemo(
     () =>
@@ -79,32 +81,34 @@ const Board: FC = () => {
 
   return (
     <View style={styles({}).MainContainer}>
-      <Animated.View
-        style={{
-          transform: [
-            {translateX: imagePosition?.x},
-            {translateY: imagePosition?.y},
-            {scale: imageScale},
-          ],
-        }}
-        {...panResponder.panHandlers}>
-        <ImageBackground
-          resizeMode="stretch"
-          style={
-            styles(imageBackground.assets ? imageBackground?.assets[0] : null)
-              .ImageContainer
-          }
-          source={{
-            uri: imageBackground.assets
-              ? imageBackground?.assets[0]?.uri
-              : null,
+      <ViewShot ref={viewShotRef} options={{format: 'jpg', quality: 1}}>
+        <Animated.View
+          style={{
+            transform: [
+              {translateX: imagePosition?.x},
+              {translateY: imagePosition?.y},
+              {scale: imageScale},
+            ],
           }}
-        />
-        <DrawLine
-          imageBackground={imageBackground}
-          drawLineTouch={drawLineTouch}
-        />
-      </Animated.View>
+          {...panResponder.panHandlers}>
+          <ImageBackground
+            resizeMode="stretch"
+            style={
+              styles(imageBackground.assets ? imageBackground?.assets[0] : null)
+                .ImageContainer
+            }
+            source={{
+              uri: imageBackground.assets
+                ? imageBackground?.assets[0]?.uri
+                : null,
+            }}
+          />
+          <DrawLine
+            imageBackground={imageBackground}
+            drawLineTouch={drawLineTouch}
+          />
+        </Animated.View>
+      </ViewShot>
       <SideButton
         setImageBackground={setImageBackground}
         setMoveImage={setMoveImage}
@@ -113,6 +117,7 @@ const Board: FC = () => {
         imageScale={imageScale}
         setPencil={setPencil}
         pencil={pencil}
+        viewShotRef={viewShotRef}
       />
     </View>
   );

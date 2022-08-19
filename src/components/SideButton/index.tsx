@@ -1,7 +1,10 @@
-import React, {FC, SetStateAction} from 'react';
-import {StyleSheet} from 'react-native';
+import React, {FC, RefObject, SetStateAction} from 'react';
+import {StyleSheet, PermissionsAndroid, Platform} from 'react-native';
 import {FAB} from 'react-native-paper';
 import {launchImageLibrary} from 'react-native-image-picker';
+import ViewShot from 'react-native-view-shot';
+import CameraRoll from '@react-native-community/cameraroll';
+import Toast from 'react-native-toast-message';
 
 type Props = {
   setImageBackground: any;
@@ -11,7 +14,21 @@ type Props = {
   imageScale: number;
   setPencil: React.Dispatch<SetStateAction<boolean>>;
   pencil: boolean;
+  viewShotRef: RefObject<ViewShot>;
 };
+
+async function hasAndroidPermission() {
+  const permission = PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE;
+
+  const hasPermission = await PermissionsAndroid.check(permission);
+  if (hasPermission) {
+    return true;
+  }
+
+  const status = await PermissionsAndroid.request(permission);
+  return status === 'granted';
+}
+
 const SideButton: FC<Props> = ({
   setImageBackground,
   setMoveImage,
@@ -20,12 +37,21 @@ const SideButton: FC<Props> = ({
   pencil,
   setImageScale,
   imageScale,
+  viewShotRef,
 }) => {
   const [state, setState] = React.useState({open: false});
 
   const onStateChange = ({open}: any) => setState({open});
 
   const {open} = state;
+
+  const showToast = () => {
+    Toast.show({
+      type: 'success',
+      text1: 'Salvo!',
+      text2: 'Sua imagem foi salva com sucesso! 📷',
+    });
+  };
 
   return (
     <FAB.Group
@@ -37,7 +63,16 @@ const SideButton: FC<Props> = ({
         {
           icon: 'camera',
           small: false,
-          onPress: () => {},
+          onPress: async () => {
+            if (Platform.OS === 'android' && !(await hasAndroidPermission())) {
+              return;
+            }
+
+            viewShotRef?.current?.capture?.().then((uri) => {
+              CameraRoll.save(uri);
+              showToast();
+            });
+          },
         },
         {
           icon: 'tooltip-text-outline',
